@@ -21,9 +21,9 @@ Let's singing a[C/E]long
 require __dir__ . '/../vendor/autoload.php';
 
 $parser = new ChordPro\Parser();
-$html = new ChordPro\HtmlFormatter();
-$monospace = new ChordPro\MonospaceFormatter();
-$json = new ChordPro\JSONFormatter();
+$html = new ChordPro\Formatter\HtmlFormatter();
+$monospace = new ChordPro\Formatter\MonospaceFormatter();
+$json = new ChordPro\Formatter\JSONFormatter();
 
 $song = $parser->parse($txt);
 

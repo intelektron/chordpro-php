@@ -1,18 +1,21 @@
 <?php
 
-/*
-*
-* Try to guess the tonality key of a song, with the chords it contains.
-* It uses a table with major scales and chords frequently found inside those scales, and takes the most representated scale.
-* Finally, it tests between Major and minor relative key which one is the most found in chords.
-* A bit brutal, but works most of the time !
-*
-*/
+declare(strict_types=1);
 
 namespace ChordPro;
 
-class GuessKey {
-    private $scales = array(
+use ChordPro\Line\Lyrics;
+
+/**
+* A class that tries to guess the tonality key of a song, with the chords it contains.
+*
+* It uses a table with major scales and chords frequently found inside those scales,
+* and takes the most representated scale. Finally, it tests between Major and minor
+* relative key which one is the most found in chords. A bit brutal, but works most of the time!
+*/
+class GuessKey
+{
+    private $scales = [
         'A'  => ['A','Bm','C#m','D','E','F#m','G#'],
         'A#' => ['A#','B#m','Dm','D#','E#','Gm','A'],
         'Bb' => ['Bb','Cm','Dm','Eb','F','Gm','A'],
@@ -34,9 +37,9 @@ class GuessKey {
         'G'  => ['G','Am','Bm','C','D','Em','F#'],
         'G#' => ['G#','A#m','B#m','C#','D#','E#m','G'],
         'Ab' => ['Ab','Bbm','Cm','Db','Eb','Fm','G']
-    );
+    ];
 
-    private $distanceChords = array(
+    private $distanceChords = [
         'C'   => 0,
         'C#'  => 1,
         'Db'  => 1,
@@ -54,12 +57,12 @@ class GuessKey {
         'Bb'  => 10,
         'A#'  => 10,
         'B'   => 11,
-    );
+    ];
 
     private function nearChords($chord) // I don't know how to call this exactly in english ? « Tons voisin » in french.
     {
         $distance = ($this->distanceChords[$chord] - 3 < 0) ? ($this->distanceChords[$chord] - 3) + 12 : $this->distanceChords[$chord] - 3;
-        $found = array_keys($this->distanceChords,$distance);
+        $found = array_keys($this->distanceChords, $distance);
         return $found;
     }
 
@@ -67,39 +70,37 @@ class GuessKey {
     {
         // List all chords of a song
         $chords = [];
-        foreach ($song->lines as $line) {
-            if (null !== $line and $line instanceof Lyrics) {
+        foreach ($song->getLines() as $line) {
+            if ($line instanceof Lyrics) {
                 foreach ($line->getBlocks() as $block) {
-                    $chord = $block->getChord();
-                    if (!empty($chord[0])) {
-                        $minor = (false !== strpos($chord[0][1],'m')) ? 'm' : '';
-                        $chord = (in_array(substr($chord[0][1],0,1),['b','#','X','K'])) ? $chord[0][0].substr($chord[0][1],0,1) : $chord[0][0];
-                        $chords[] = $chord.$minor;
+                    $blockChords = $block->getChords();
+                    if (!empty($blockChords)) {
+                        $chords[] = reset($blockChords);
                     }
                 }
             }
         }
 
         // Order key by occurences in a scale
-        $list_keys = [];
+        $listKeys = [];
         foreach ($this->scales as $key => $scale) {
-            $list_keys[$key] = 0;
+            $listKeys[$key] = 0;
             foreach ($chords as $chord) {
-                if (in_array($chord, $scale)) {
-                    $list_keys[$key]++;
+                if (in_array($chord->getRootChord(), $scale)) {
+                    $listKeys[$key]++;
                 }
             }
         }
-        arsort($list_keys);
-        $list_keys = array_keys($list_keys);
-        $major_key = $list_keys[0]; // Take the first one
-        $minor_keys = $this->nearChords($major_key); // Find minors keys near major key
+        arsort($listKeys);
+        $listKeys = array_keys($listKeys);
+        $majorKey = $listKeys[0]; // Take the first one
+        $minorKeys = $this->nearChords($majorKey); // Find minors keys near major key
 
         // Count occurences of minor & major keys to determinate the most plausible key
-        $result[$major_key] = count(array_keys($chords,$major_key));
-        foreach ($minor_keys as $key) {
+        $result[$majorKey] = count(array_keys($chords, $majorKey));
+        foreach ($minorKeys as $key) {
             $key = $key.'m';
-            $count = count(array_keys($chords,$key));
+            $count = count(array_keys($chords, $key));
             if ($count > 0) {
                 $result[$key] = $count;
             }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 * Two use-cases :
 *
@@ -11,9 +13,11 @@
 
 namespace ChordPro;
 
+use ChordPro\Line\Lyrics;
+
 class Transposer
 {
-    private $simple_transpose_table = array(
+    private $simpleTransposeTable = [
         'C'   => 0,
         'C#'  => 1,
         'Db'  => 1,
@@ -31,9 +35,9 @@ class Transposer
         'Bb'  => 10,
         'A#'  => 10,
         'B'   => 11,
-    );
+    ];
 
-    private $transpose_chords = array(
+    private $transposeChords = [
         'Fb' => 0,
         'Cb' => 1,
         'Gb' => 2,
@@ -68,10 +72,10 @@ class Transposer
         'D#m' => 14,
         'A#m' => 15,
         'E#m' => 16
-    );
+    ];
 
     // K for natural, X for ##, bb for bb :)
-    private $transpose_table = [
+    private $transposeTable = [
         ['Fb','F','Gbb','Gb','G','Abb','Ab','A','Bbb','Bb','Cbb','Cb','C','Dbb','Db','D','Ebb','Eb'],
         ['Cb','C','Dbb','Db','D','Ebb','Eb','E','Fb','F','Gbb','Gb','G','Abb','Ab','A','Bbb','Bb'],
         ['Gb','G','Abb','Ab','A','Bbb','Bb','B','Cb','C','Dbb','Db','D','Ebb','Eb','E','Fb','F'],
@@ -91,17 +95,23 @@ class Transposer
         ['G#','GX','A','A#','AX','B','B#','BX','C#','CX','D','D#','DX','E','E#','EX','F#','FX']
     ];
 
+    /**
+     * Transpose a song.
+     *
+     * @param Song $song The song object.
+     * @param string $value The target transposition. It can be eiteher a number of semitones, or a key.
+     * @return void
+     */
     public function transpose(Song $song, string $value)
     {
-        foreach ($song->lines as $line) {
+        foreach ($song->getLines() as $line) {
             if ($line instanceof Lyrics) {
                 foreach ($line->getBlocks() as $block) {
-                    if (null !== $block->getChord()) {
+                    if ($chords = $block->getChords()) {
                         if (is_numeric($value)) {
-                            $block->setChord($this->simple_transpose($block->getChord(),$value));
-                        }
-                        else {
-                            $block->setChord($this->complete_transpose($block->getChord(),$song->getOriginalKey(),$value));
+                            $this->simpleTranspose($chords, intval($value));
+                        } else {
+                            $this->completeTranspose($chords, $song->getKey(), $value);
                             $song->setKey($value);
                         }
                     }
@@ -110,36 +120,32 @@ class Transposer
         }
     }
 
-    private function simple_transpose(array $chords, int $value)
+    /**
+     * Transpose a song by semitones.
+     */
+    private function simpleTranspose(array $chords, int $value)
     {
         foreach ($chords as $chord) {
-            if (in_array(substr($chord[1],0,1),['b','#','X','K'])) {
-                $chord = [$chord[0].substr($chord[1],0,1),substr($chord[1],1)];
+            if (!$chord->isKnown) {
+                continue;
             }
 
             if (!empty($value) and $value < 12 and $value > -12) {
-                $key = $this->simple_transpose_table[$chord[0]];
+                $key = $this->simpleTransposeTable[$chord->getRootChord()];
                 $new_key = ($key + $value < 0) ? 12 + ($key + $value) : ($key + $value) % 12;
-                $chord[0] = array_search($new_key,$this->simple_transpose_table);
+                $chord->transposeTo(array_search($new_key, $this->simpleTransposeTable));
             }
-
-            $transposed[] = implode($chord);
         }
-        return implode('/',$transposed);
     }
 
-    private function complete_transpose(array $chords, string $from_key, string $to_key)
+    /**
+     * Transpose a song to key.
+     */
+    private function completeTranspose(array $chords, string $fromKey, string $toKey)
     {
         foreach ($chords as $chord) {
-            if (in_array(substr($chord[1],0,1),['b','#','X','K'])) {
-                $chord = [$chord[0].substr($chord[1],0,1),substr($chord[1],1)];
-            }
-
-            $rank = array_search($chord[0],$this->transpose_table[$this->transpose_chords[$from_key]]);
-            $chord[0] = $this->transpose_table[$this->transpose_chords[$to_key]][$rank];
-
-            $transposed[] = implode($chord);
+            $rank = array_search($chord->getRootChord, $this->transposeTable[$this->transposeChords[$fromKey]]);
+            $chord->transposeTo($this->transposeTable[$this->transposeChords[$toKey]][$rank]);
         }
-        return implode('/',$transposed);
     }
 }

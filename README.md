@@ -2,6 +2,8 @@
 
 A simple tool to parse, transpose & format [ChordPro](https://www.chordpro.org) songs with lyrics & chords.
 
+Forked from <https://github.com/nicolaswurtz/chordpro-php> by [Nicolaz Wurtz](https://github.com/nicolaswurtz), on LGPL-3 license.
+
 It currently supports the following output formats :
 - HTML (verses contain blocks with embricated `span` for alignement of chords with lyrics)
 - JSON (verses are array of arrays of chords and lyrics for alignement purpose)
@@ -19,7 +21,7 @@ _I'm french, so there's probably a lot of mistakes, my english is not always acc
 Via composer :
 
 ``` bash
-$ composer require nicolaswurtz/chordpro-php
+$ composer require intelektron/chordpro-php
 ```
 
 ## Usage
@@ -88,7 +90,7 @@ array(
 
 ### Song
 - `$song->getKey([])` to obtain key of song, **with transposition**, you can alter langage english by default, or French ```$song->getKey(['french' => true]);```, options array is mandatory, you could use en empty array if none
-- `$song->getOriginalKey()` to obtain key of song, as defined in metadata's field "key"
+- `$song->getMetadataKey()` to obtain key of song, as defined in metadata's field "key"
 
 ### Guess key of a song
 This fonctionnality is experimental and not reliable (20% of mistakes, tested with ~1000 songs), but can be very useful.
