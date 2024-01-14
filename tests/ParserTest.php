@@ -137,7 +137,19 @@ final class ParserTest extends TestCase
                     $this->assertCount(0, $line->getBlocks()[2]->getChords());
                     break;
 
-                case 15: // Metadata - end of verse.
+                case 15: // Lyrics - second line - only chord.
+                    assert($line instanceof Lyrics);
+                    $this->assertCount(1, $line->getBlocks());
+
+                    // [A]
+
+                    $this->assertSame('', $line->getBlocks()[0]->getText());
+                    $this->assertCount(1, $line->getBlocks()[0]->getChords());
+                    $this->assertSame('A', $line->getBlocks()[0]->getChords()[0]->getRootChord());
+                    $this->assertSame('', $line->getBlocks()[0]->getChords()[0]->getExt());
+                    break;
+
+                case 16: // Metadata - end of verse.
                     assert($line instanceof Metadata);
                     $this->assertSame('end_of_verse', $line->getName());
                     $this->assertNull($line->getValue());

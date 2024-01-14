@@ -13,4 +13,5 @@ Sing it [D]loud, sing it [G7/E]cle[A#m]ar,
 
 {start_of_verse}
 [A]These lyrics are [Dm] a nightmare.
+[A]
 {end_of_verse}

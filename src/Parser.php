@@ -15,20 +15,23 @@ class Parser
     public function parse(string $text, ?ChordNotationInterface $sourceNotation = null): Song
     {
         $lines = [];
-        foreach (preg_split('~\R~', $text) as $line) {
-            $line = trim($line);
-            switch (substr($line, 0, 1)) {
-                case "{":
-                    $lines[] = $this->parseMetadata($line);
-                    break;
-                case "#":
-                    $lines[] = new Comment(trim(substr($line, 1)));
-                    break;
-                case "":
-                    $lines[] = new EmptyLine();
-                    break;
-                default:
-                    $lines[] = $this->parseLyrics($line, $sourceNotation);
+        $split = preg_split('~\R~', $text);
+        if ($split !== false) {
+            foreach ($split as $line) {
+                $line = trim($line);
+                switch (substr($line, 0, 1)) {
+                    case "{":
+                        $lines[] = $this->parseMetadata($line);
+                        break;
+                    case "#":
+                        $lines[] = new Comment(trim(substr($line, 1)));
+                        break;
+                    case "":
+                        $lines[] = new EmptyLine();
+                        break;
+                    default:
+                        $lines[] = $this->parseLyrics($line, $sourceNotation);
+                }
             }
         }
 
@@ -71,12 +74,15 @@ class Parser
         $blocks = [];
         $explodedLine = explode('[', $line);
         foreach($explodedLine as $num => $lineFragment) {
-            if (!empty($lineFragment)) {
+            if ($lineFragment !== '') {
                 $chordWithText = explode(']', $lineFragment);
 
                 // If the fragment consists of only a chord without text.
-                if (isset($chordWithText[1]) && empty($chordWithText[1])) {
-                    $chordWithText[1] = '';
+                if (isset($chordWithText[1]) && $chordWithText[1] == '') {
+                    $blocks[] = new Block(
+                        chords: Chord::fromSlice($chordWithText[0], $sourceNotation),
+                        text: ''
+                    );
                 }
                 // If first line begins with text and not a chord.
                 elseif ($num == 0 && count($chordWithText) == 1) {

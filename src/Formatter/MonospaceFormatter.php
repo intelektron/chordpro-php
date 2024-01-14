@@ -39,22 +39,22 @@ class MonospaceFormatter extends Formatter implements FormatterInterface
     private function getMetadataMonospace(Metadata $metadata): string
     {
         // Ignore some metadata.
-        if (in_array($metadata->getName(), $this->ignoreMetadata)) {
+        if (in_array($metadata->getName(), $this->ignoreMetadata, true)) {
             return '';
         }
 
         $match = [];
-        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match)) {
+        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match) !== false) {
             $content = (null !== $metadata->getValue()) ? $metadata->getValue()."\n" : mb_strtoupper($match[1]) . "\n";
             return $content;
-        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName())) {
+        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName()) !== false) {
             return '\n';
         } else {
             return $metadata->getValue()."\n";
         }
     }
 
-    private function generateBlank($count)
+    private function generateBlank(int $count): string
     {
         $i = 1;
         $blank = '';
@@ -67,7 +67,7 @@ class MonospaceFormatter extends Formatter implements FormatterInterface
         return $blank;
     }
 
-    private function getLyricsMonospace(Lyrics $lyrics)
+    private function getLyricsMonospace(Lyrics $lyrics): string
     {
         $lineChords = '';
         $lineTexts = '';
@@ -75,13 +75,11 @@ class MonospaceFormatter extends Formatter implements FormatterInterface
         foreach ($lyrics->getBlocks() as $block) {
             $chords = [];
             $slicedChords = $block->getChords();
-            if (!empty($slicedChords)) {
-                foreach ($slicedChords as $slicedChord) {
-                    if ($slicedChord->isKnown()) {
-                        $chords[] = $slicedChord->getRootChord($this->notation).$slicedChord->getExt($this->notation);
-                    } else {
-                        $chords[] = $slicedChord->getOriginalName();
-                    }
+            foreach ($slicedChords as $slicedChord) {
+                if ($slicedChord->isKnown()) {
+                    $chords[] = $slicedChord->getRootChord($this->notation).$slicedChord->getExt($this->notation);
+                } else {
+                    $chords[] = $slicedChord->getOriginalName();
                 }
             }
 
@@ -99,7 +97,7 @@ class MonospaceFormatter extends Formatter implements FormatterInterface
         return $lineChords."\n".$lineTexts."\n";
     }
 
-    private function getLyricsOnlyMonospace(Lyrics $lyrics)
+    private function getLyricsOnlyMonospace(Lyrics $lyrics): string
     {
         $texts = '';
         foreach ($lyrics->getBlocks() as $block) {

@@ -15,9 +15,7 @@
         "phpstan/phpstan-strict-rules": "^1.5",
         "thecodingmachine/phpstan-strict-rules": "^1.0",
         "phpstan/extension-installer": "^1.3",
-        "voku/phpstan-rules": "^3.2",
-        "shipmonk/dead-code-detector": "^0.1.0",
-        "sidz/phpstan-rules": "^0.4.3"
+        "voku/phpstan-rules": "^3.2"
     },
     "autoload": {
         "psr-4": {

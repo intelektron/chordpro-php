@@ -11,7 +11,7 @@ use ChordPro\Line\Metadata;
  */
 class Song
 {
-    private $key;
+    private string $key;
 
     /**
      * Song constructor.
@@ -30,7 +30,7 @@ class Song
     public function getMetadataKey(): ?string
     {
         foreach ($this->lines as $line) {
-            if ($line instanceof Metadata and $line->getName() == 'key') {
+            if ($line instanceof Metadata && $line->getName() == 'key') {
                 return $line->getValue();
             }
         }
@@ -46,12 +46,12 @@ class Song
      *
      * @return string|null The key, or null if not defined.
      */
-    public function getKey()
+    public function getKey(): ?string
     {
-        return $this->key ?: $this->getMetadataKey();
+        return $this->key ?? $this->getMetadataKey();
     }
 
-    public function setKey($value)
+    public function setKey(string $value): void
     {
         $this->key = $value;
     }

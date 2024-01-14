@@ -10,8 +10,15 @@ abstract class Formatter
 {
     protected ?ChordNotationInterface $notation;
     protected bool $noChords = false;
+
+    /**
+     * @var string[]
+     */
     protected array $ignoreMetadata = [];
 
+    /**
+     * @param mixed[] $options
+     */
     public function setOptions(array $options): void
     {
         if (isset($options['notation']) && $options['notation'] instanceof ChordNotationInterface) {
@@ -20,7 +27,7 @@ abstract class Formatter
         if (isset($options['no_chords']) && true === $options['no_chords']) {
             $this->noChords = true;
         }
-        if (!empty($options['ignore_metadata']) && is_array($options['ignore_metadata'])) {
+        if (isset($options['ignore_metadata']) && is_array($options['ignore_metadata'])) {
             $this->ignoreMetadata = $options['ignore_metadata'];
         }
     }

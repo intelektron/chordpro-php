@@ -9,7 +9,7 @@ namespace ChordPro\Line;
  */
 class Metadata extends Line
 {
-    private $name;
+    private string $name;
 
     public function __construct(string $name, private ?string $value)
     {

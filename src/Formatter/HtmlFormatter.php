@@ -39,7 +39,7 @@ class HtmlFormatter extends Formatter implements FormatterInterface
     private function blankChars(?string $text): string
     {
         // @todo Is this if needed?
-        if (empty($text)) {
+        if (is_null($text) || $text === '') {
             $text = '&nbsp;';
         }
         return str_replace(' ', '&nbsp;', $text);
@@ -48,19 +48,19 @@ class HtmlFormatter extends Formatter implements FormatterInterface
     private function getMetadataHtml(Metadata $metadata): string
     {
         // Ignore some metadata.
-        if (in_array($metadata->getName(), $this->ignoreMetadata)) {
+        if (in_array($metadata->getName(), $this->ignoreMetadata, true)) {
             return '';
         }
 
         $match = [];
-        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match)) {
+        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match) !== false) {
             $type = preg_replace('/[\W_\-]/', '', $match[1]);
             $content = '';
             if (null !== $metadata->getValue()) {
                 $content = '<div class="chordpro-'.$type.'-comment">'.$metadata->getValue().'</div>';
             }
             return $content.'<div class="chordpro-'.$type.'">';
-        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName())) {
+        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName()) !== false) {
             return '</div>';
         } else {
             $name = preg_replace('/[\W_\-]/', '', mb_strtolower($metadata->getName()));
@@ -68,7 +68,7 @@ class HtmlFormatter extends Formatter implements FormatterInterface
         }
     }
 
-    private function getLyricsHtml(Lyrics $lyrics)
+    private function getLyricsHtml(Lyrics $lyrics): string
     {
         $verse = '<div class="chordpro-verse">';
         foreach ($lyrics->getBlocks() as $block) {
@@ -76,13 +76,11 @@ class HtmlFormatter extends Formatter implements FormatterInterface
             $chords = [];
 
             $slicedChords = $block->getChords();
-            if (!empty($slicedChords)) {
-                foreach ($slicedChords as $slicedChord) {
-                    if ($slicedChord->isKnown()) {
-                        $chords[] = $slicedChord->getRootChord($this->notation).'<sup>'.$slicedChord->getExt($this->notation).'</sup>';
-                    } else {
-                        $chords[] = $slicedChord->getOriginalName();
-                    }
+            foreach ($slicedChords as $slicedChord) {
+                if ($slicedChord->isKnown()) {
+                    $chords[] = $slicedChord->getRootChord($this->notation).'<sup>'.$slicedChord->getExt($this->notation).'</sup>';
+                } else {
+                    $chords[] = $slicedChord->getOriginalName();
                 }
             }
 
@@ -98,7 +96,7 @@ class HtmlFormatter extends Formatter implements FormatterInterface
         return $verse;
     }
 
-    private function getLyricsOnlyHtml(Lyrics $lyrics)
+    private function getLyricsOnlyHtml(Lyrics $lyrics): string
     {
         $verse = '<div class="chordpro-verse">';
         foreach ($lyrics->getBlocks() as $block) {

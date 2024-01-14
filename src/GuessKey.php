@@ -15,7 +15,10 @@ use ChordPro\Line\Lyrics;
 */
 class GuessKey
 {
-    private $scales = [
+    /**
+     * @var string[][]
+     */
+    private array $scales = [
         'A'  => ['A','Bm','C#m','D','E','F#m','G#'],
         'A#' => ['A#','B#m','Dm','D#','E#','Gm','A'],
         'Bb' => ['Bb','Cm','Dm','Eb','F','Gm','A'],
@@ -39,7 +42,10 @@ class GuessKey
         'Ab' => ['Ab','Bbm','Cm','Db','Eb','Fm','G']
     ];
 
-    private $distanceChords = [
+    /**
+     * @var int[]
+     */
+    private array $distanceChords = [
         'C'   => 0,
         'C#'  => 1,
         'Db'  => 1,
@@ -59,14 +65,17 @@ class GuessKey
         'B'   => 11,
     ];
 
-    private function nearChords($chord) // I don't know how to call this exactly in english ? « Tons voisin » in french.
+    /**
+     * @return string[]
+     */
+    private function nearChords(string $chord): array // I don't know how to call this exactly in english ? « Tons voisin » in french.
     {
         $distance = ($this->distanceChords[$chord] - 3 < 0) ? ($this->distanceChords[$chord] - 3) + 12 : $this->distanceChords[$chord] - 3;
-        $found = array_keys($this->distanceChords, $distance);
+        $found = array_keys($this->distanceChords, $distance, true);
         return $found;
     }
 
-    public function guessKey($song)
+    public function guessKey(Song $song): string
     {
         // List all chords of a song
         $chords = [];
@@ -74,7 +83,7 @@ class GuessKey
             if ($line instanceof Lyrics) {
                 foreach ($line->getBlocks() as $block) {
                     $blockChords = $block->getChords();
-                    if (!empty($blockChords)) {
+                    if (count($blockChords) > 0) {
                         $chords[] = reset($blockChords);
                     }
                 }
@@ -86,7 +95,7 @@ class GuessKey
         foreach ($this->scales as $key => $scale) {
             $listKeys[$key] = 0;
             foreach ($chords as $chord) {
-                if (in_array($chord->getRootChord(), $scale)) {
+                if (in_array($chord->getRootChord(), $scale, true)) {
                     $listKeys[$key]++;
                 }
             }
@@ -97,10 +106,11 @@ class GuessKey
         $minorKeys = $this->nearChords($majorKey); // Find minors keys near major key
 
         // Count occurences of minor & major keys to determinate the most plausible key
-        $result[$majorKey] = count(array_keys($chords, $majorKey));
+        $result = [];
+        $result[$majorKey] = count(array_keys($chords, $majorKey, true));
         foreach ($minorKeys as $key) {
             $key = $key.'m';
-            $count = count(array_keys($chords, $key));
+            $count = count(array_keys($chords, $key, true));
             if ($count > 0) {
                 $result[$key] = $count;
             }

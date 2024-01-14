@@ -19,11 +19,13 @@ class JSONFormatter extends Formatter implements FormatterInterface
         foreach ($song->getLines() as $line) {
             $json[] = $this->getLineJSON($line);
         }
-        return json_encode($json, JSON_PRETTY_PRINT);
+        return (string) json_encode($json, JSON_PRETTY_PRINT);
     }
 
-
-    private function getLineJSON(Line $line)
+    /**
+     * @return mixed
+     */
+    private function getLineJSON(Line $line): mixed
     {
         if ($line instanceof Metadata) {
             return $this->getMetadataJSON($line);
@@ -34,14 +36,17 @@ class JSONFormatter extends Formatter implements FormatterInterface
         }
     }
 
+    /**
+     * @return mixed[]
+     */
     private function getMetadataJSON(Metadata $metadata): ?array
     {
         // Ignore some metadata.
-        if (in_array($metadata->getName(), $this->ignoreMetadata)) {
+        if (in_array($metadata->getName(), $this->ignoreMetadata, true)) {
             return null;
         }
 
-        if (empty($metadata->getValue())) {
+        if (!is_null($metadata->getValue())) {
             return [$metadata->getName()];
         } else {
             switch($metadata->getName()) {
@@ -51,19 +56,20 @@ class JSONFormatter extends Formatter implements FormatterInterface
         }
     }
 
+    /**
+     * @return mixed[]
+     */
     private function getLyricsJSON(Lyrics $lyrics): array
     {
         $return = [];
         foreach ($lyrics->getBlocks() as $block) {
             $chords = [];
             $slicedChords = $block->getChords();
-            if (!empty($slicedChords)) {
-                foreach ($slicedChords as $slicedChord) {
-                    if ($slicedChord->isKnown()) {
-                        $chords[] = $slicedChord->getRootChord($this->notation).$slicedChord->getExt($this->notation);
-                    } else {
-                        $chords[] = $slicedChord->getOriginalName();
-                    }
+            foreach ($slicedChords as $slicedChord) {
+                if ($slicedChord->isKnown()) {
+                    $chords[] = $slicedChord->getRootChord($this->notation).$slicedChord->getExt($this->notation);
+                } else {
+                    $chords[] = $slicedChord->getOriginalName();
                 }
             }
             $chord = implode('/', array_map("implode", $chords)).' ';

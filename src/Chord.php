@@ -30,8 +30,10 @@ class Chord
 
     /**
      * Static cache of different notation roots.
+     *
+     * @var string[][]
      */
-    private static $notationRoots = [];
+    private static array $notationRoots = [];
 
     public function __construct(private string $originalName, ?ChordNotationInterface $sourceNotation = null)
     {
@@ -50,9 +52,14 @@ class Chord
         }
     }
 
+    /**
+     * Create multiple chords from slices like [C/E].
+     *
+     * @return Chord[]
+     */
     public static function fromSlice(string $text, ?ChordNotationInterface $notation = null): array
     {
-        if (empty($text)) {
+        if ($text === '') {
             return [];
         }
         $chords = explode('/', $text);
@@ -73,9 +80,12 @@ class Chord
         return substr($this->rootChord, -1) === 'm';
     }
 
+    /**
+     * @return string[] The root chords in the notation.
+     */
     private function getRootChordTable(?ChordNotationInterface $notation): array
     {
-        if (!$notation) {
+        if (is_null($notation)) {
             return self::ROOT_CHORDS;
         } elseif (isset($this->notationRoots[$notation::class])) {
             return $this->notationRoots[$notation::class];
@@ -91,7 +101,7 @@ class Chord
 
     public function getRootChord(?ChordNotationInterface $targetNotation = null): string
     {
-        if ($targetNotation) {
+        if (!is_null($targetNotation)) {
             return $targetNotation->convertChordRootToNotation($this->rootChord);
         }
         return $this->rootChord;
@@ -99,7 +109,7 @@ class Chord
 
     public function getExt(?ChordNotationInterface $targetNotation = null): string
     {
-        if ($targetNotation) {
+        if (!is_null($targetNotation)) {
             return $targetNotation->convertExtToNotation($this->ext);
         }
         return $this->ext;

@@ -11,14 +11,14 @@ abstract class ChordNotation implements ChordNotationInterface
     /**
      * Get the table of chord key mappings to English.
      *
-     * @return array
+     * @return string[]
      */
     abstract protected function getToEnglishTable(): array;
 
     /**
      * Get the table of chord key mappings from English.
      *
-     * @return array
+     * @return string[]
      */
     abstract protected function getFromEnglishTable(): array;
 

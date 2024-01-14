@@ -9,6 +9,9 @@ namespace ChordPro\Line;
  */
 class Lyrics extends Line
 {
+    /**
+     * @param \ChordPro\Block[] $blocks The blocks of the line.
+     */
     public function __construct(private array $blocks)
     {
     }

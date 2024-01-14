@@ -8,6 +8,9 @@ use ChordPro\Notation\ChordNotationInterface;
 
 class Block
 {
+    /**
+     * @param Chord[] $chords The chords.
+     */
     public function __construct(private array $chords, private string $text)
     {
     }
