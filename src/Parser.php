@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChordPro;
 
+use ChordPro\Line\Comment;
 use ChordPro\Line\EmptyLine;
 use ChordPro\Line\Lyrics;
 use ChordPro\Line\Metadata;
@@ -19,6 +20,9 @@ class Parser
             switch (substr($line, 0, 1)) {
                 case "{":
                     $lines[] = $this->parseMetadata($line);
+                    break;
+                case "#":
+                    $lines[] = new Comment(trim(substr($line, 1)));
                     break;
                 case "":
                     $lines[] = new EmptyLine();

@@ -11,22 +11,22 @@ use ChordPro\Notation\ChordNotationInterface;
  */
 class Chord
 {
-    public const ROOT_CHORDS = ['F#m', 'C#m', 'G#m', 'D#m', 'A#m', 'E#m', 'Dbm', 'Abm', 'Ebm', 'Bbm', 'Fb', 'Cb', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F#', 'C#', 'G#',  'Fm', 'Cm', 'Gm', 'Dm', 'Am', 'Em', 'Bm', 'F', 'C', 'G', 'D', 'A', 'E', 'B'];
+    public const ROOT_CHORDS = ['F#m', 'C#m', 'G#m', 'D#m', 'A#m', 'E#m', 'Dbm', 'Abm', 'Ebm', 'Bbm', 'Fb', 'Cb', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'A#', 'F#', 'C#', 'G#', 'D#', 'Fm', 'Cm', 'Gm', 'Dm', 'Am', 'Em', 'Bm', 'F', 'C', 'G', 'D', 'A', 'E', 'B'];
 
     /**
      * The main chord.
      */
-    private string $rootChord;
+    private string $rootChord = '';
 
     /**
      * The extension of the chord.
      */
-    private string $ext;
+    private string $ext = '';
 
     /**
      * Was the chord recognized?
      */
-    private bool $isKnown;
+    private bool $isKnown = false;
 
     /**
      * Static cache of different notation roots.
@@ -110,7 +110,7 @@ class Chord
         return $this->originalName;
     }
 
-    public function transposeTo($rootChord): void
+    public function transposeTo(string $rootChord): void
     {
         $this->rootChord = $rootChord;
     }

@@ -22,18 +22,18 @@ class Transposer
         'C#'  => 1,
         'Db'  => 1,
         'D'   => 2,
-        'Eb'  => 3,
         'D#'  => 3,
+        'Eb'  => 3,
         'E'   => 4,
         'F'   => 5,
         'F#'  => 6,
         'Gb'  => 6,
         'G'   => 7,
-        'Ab'  => 8,
         'G#'  => 8,
+        'Ab'  => 8,
         'A'   => 9,
-        'Bb'  => 10,
         'A#'  => 10,
+        'Bb'  => 10,
         'B'   => 11,
     ];
 
@@ -99,10 +99,10 @@ class Transposer
      * Transpose a song.
      *
      * @param Song $song The song object.
-     * @param string $value The target transposition. It can be eiteher a number of semitones, or a key.
+     * @param int|string $value The target transposition. It can be eiteher a number of semitones, or a key.
      * @return void
      */
-    public function transpose(Song $song, string $value)
+    public function transpose(Song $song, int|string $value)
     {
         foreach ($song->getLines() as $line) {
             if ($line instanceof Lyrics) {
@@ -126,14 +126,15 @@ class Transposer
     private function simpleTranspose(array $chords, int $value)
     {
         foreach ($chords as $chord) {
-            if (!$chord->isKnown) {
+            if (!$chord->isKnown()) {
                 continue;
             }
 
             if (!empty($value) and $value < 12 and $value > -12) {
-                $key = $this->simpleTransposeTable[$chord->getRootChord()];
+                $suffix = $chord->isMinor() ? 'm' : '';
+                $key = $this->simpleTransposeTable[trim($chord->getRootChord(), 'm')];
                 $new_key = ($key + $value < 0) ? 12 + ($key + $value) : ($key + $value) % 12;
-                $chord->transposeTo(array_search($new_key, $this->simpleTransposeTable));
+                $chord->transposeTo(array_search($new_key, $this->simpleTransposeTable) . $suffix);
             }
         }
     }
@@ -144,8 +145,9 @@ class Transposer
     private function completeTranspose(array $chords, string $fromKey, string $toKey)
     {
         foreach ($chords as $chord) {
-            $rank = array_search($chord->getRootChord, $this->transposeTable[$this->transposeChords[$fromKey]]);
-            $chord->transposeTo($this->transposeTable[$this->transposeChords[$toKey]][$rank]);
+            $suffix = $chord->isMinor() ? 'm' : '';
+            $rank = array_search(trim($chord->getRootChord(), 'm'), $this->transposeTable[$this->transposeChords[$fromKey]]);
+            $chord->transposeTo($this->transposeTable[$this->transposeChords[$toKey]][$rank] . $suffix);
         }
     }
 }

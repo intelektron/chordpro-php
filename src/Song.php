@@ -6,7 +6,10 @@ namespace ChordPro;
 
 use ChordPro\Line\Metadata;
 
-class Song extends \ArrayObject
+/**
+ * A class that represents the song.
+ */
+class Song
 {
     private $key;
 

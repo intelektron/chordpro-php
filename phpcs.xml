@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="chordpro-php">
+    <description>PHP Compatibility check for chordpro-php</description>
+    <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility" />
+    <rule ref="PHPCompatibility"/>
+    <file>src</file>
+    <config name="testVersion" value="8.1-"/>
+</ruleset>

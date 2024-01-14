@@ -1,10 +1,3 @@
-includes:
-    # Choose extensions to enable. Please refer to the Dockerfile for possible options.
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
-    - vendor/ekino/phpstan-banned-code/extension.neon
-    # - vendor/ergebnis/phpstan-rules/rules.neon
-    # - vendor/phpstan/phpstan-strict-rules/rules.neon # Strict PHP rules, enable if needed.
-
 parameters:
     level: 5
     paths:

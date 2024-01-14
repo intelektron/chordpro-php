@@ -2,10 +2,8 @@
 
 // Include tests and support functions.
 $finder = PhpCsFixer\Finder::create()
-  ->exclude('_output')
-  ->exclude('_support')
-  ->exclude('Support/_generated')
   ->in(__DIR__ . '/src')
+  ->in(__DIR__ . '/tests')
 ;
 
 // Adjust the list of rules here.
