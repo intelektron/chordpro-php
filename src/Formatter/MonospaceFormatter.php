@@ -12,7 +12,7 @@ use ChordPro\Song;
 
 class MonospaceFormatter extends Formatter implements FormatterInterface
 {
-    public function format(Song $song, array $options): string
+    public function format(Song $song, array $options = []): string
     {
         $this->setOptions($options);
 
@@ -44,11 +44,11 @@ class MonospaceFormatter extends Formatter implements FormatterInterface
         }
 
         $match = [];
-        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match) !== false) {
+        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match) === 1) {
             $content = (null !== $metadata->getValue()) ? $metadata->getValue()."\n" : mb_strtoupper($match[1]) . "\n";
             return $content;
-        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName()) !== false) {
-            return '\n';
+        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName()) === 1) {
+            return "\n";
         } else {
             return $metadata->getValue()."\n";
         }

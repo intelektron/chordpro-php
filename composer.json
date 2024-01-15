@@ -3,18 +3,18 @@
     "description": "Parse, transpose and format (html, json, plaintext) ChordPro format for songs lyrics with chords.",
     "type": "library",
     "require": {
-        "php": ">=8.1",
-        "phpcompatibility/php-compatibility": "^9.3"
+        "php": ">=8.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0",
-        "phpstan/phpstan": "^1.10",
-        "phpstan/phpstan-deprecation-rules": "^1.1",
         "ekino/phpstan-banned-code": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.46",
-        "phpstan/phpstan-strict-rules": "^1.5",
-        "thecodingmachine/phpstan-strict-rules": "^1.0",
+        "phpcompatibility/php-compatibility": "^9.3",
         "phpstan/extension-installer": "^1.3",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-deprecation-rules": "^1.1",
+        "phpstan/phpstan-strict-rules": "^1.5",
+        "phpunit/phpunit": "^10.0",
+        "thecodingmachine/phpstan-strict-rules": "^1.0",
         "voku/phpstan-rules": "^3.2"
     },
     "autoload": {

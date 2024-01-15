@@ -2,7 +2,8 @@ body {
   font-family: Helvetica;
 }
 
-/* Metadatas */
+/* Metadata */
+
 .chordpro-title {
     font-size: 2em;
     font-weight: bold;
@@ -27,21 +28,21 @@ body {
     margin: 1em 0;
 }
 
-/* Verses & Chorus */
+/* Lines & Chorus */
 
-body.chordpro-verse:first-of-type {
+body.chordpro-line:first-of-type {
     border-top: 1px solid #000;
     padding-top: 1em;
     margin-top: 1em;
 }
-.chordpro-verse {
+.chordpro-line {
   height: 2.5em;
 }
 .chordpro-chorus {
   padding-left: 10px;
   border-left: 4px solid #777;
 }
-.chordpro-elem {
+.chordpro-block {
   position: relative;
   display: inline-block;
 }

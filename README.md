@@ -1,27 +1,30 @@
-# chordpro-php
+# The chordpro-php library
 
 A simple tool to parse, transpose & format [ChordPro](https://www.chordpro.org) songs with lyrics & chords.
 
 Forked from <https://github.com/nicolaswurtz/chordpro-php> by [Nicolaz Wurtz](https://github.com/nicolaswurtz), on LGPL-3 license.
 
-It currently supports the following output formats :
-- HTML (verses contain blocks with embricated `span` for alignement of chords with lyrics)
-- JSON (verses are array of arrays of chords and lyrics for alignement purpose)
-- Plain text (chords are aligned with monospace text thanks to whitespaces)
+The following output formats are currently supported
 
-And provides some extra functionnalities :
-- Tranpose chords (can be very clever if original key is known)
-- Display french chords
-- Guess tonality key of a song
+- HTML (verses contain blocks with embedded `span` for aligning chords with lyrics)
+- JSON (verses are arrays of chords and lyrics for alignment purposes)
+- Plain text (chords are aligned with monospace text thanks to whitespace)
 
-_I'm french, so there's probably a lot of mistakes, my english is not always accurate — je fais ce que je peux hein :P_
+And provides some extra functionality:
+
+- Tranpose chords by semitones or to the target key.
+- Parse and display various chord notations:
+  - French (`Do`, `Ré`, `Mi`)
+  - German (`Fis`, `a`)
+  - With UTF characters (`A♭`, `F♯`)
+- Guess the key of a song.
 
 ## Install
 
-Via composer :
+Via composer:
 
 ``` bash
-$ composer require intelektron/chordpro-php
+composer require intelektron/chordpro-php
 ```
 
 ## Usage
@@ -38,8 +41,8 @@ $txt = "{t:ChordpropPHP Song}
 {c:GPL3 2019 Nicolas Wurtz}
 {key:C}
 [C]This is the [Dm]beautiful [Em]song
-I [Dm]wroted in [F/G]Chordpro for[C]mat [Dm/F]
-Let's singing a[C/E]long
+I [Dm]wrote in [F/G]Chordpro for[C]mat [Dm/F]
+Let's sing it a[C/E]long
 [Bb] It's ea[Dm]sy to do [F]that [C]
 
 {soc}
@@ -52,81 +55,172 @@ Let's singing a[C/E]long
 
 $parser = new ChordPro\Parser();
 
-// Choose one (or all !) of those formatters following your needs
-$html_formatter = new ChordPro\HtmlFormatter();
-$monospace_formatter = new ChordPro\MonospaceFormatter();
-$json_formatter = new ChordPro\JSONFormatter();
+// Choose one of these formatters according to your needs.
+$htmlFormatter = new ChordPro\Formatter\HtmlFormatter();
+$monospaceFormatter = new ChordPro\Formatter\MonospaceFormatter();
+$jsonFormatter = new ChordPro\Formatter\JSONFormatter();
 
-// Create song object after parsing txt
+// Create song object after parsing $txt.
 $song = $parser->parse($txt);
 
-// You can tranpose your song, put how many semitones you want to transpose in second argument OR desired key (only if metadata "key" is defined)
+// You can transpose your song.
 $transposer = new ChordPro\Transposer();
-$transposer->transpose($song,-5); // Simple transpose, but could produce some musical errors (sharp instead of flat)
-//$transposer->transpose($song,'Abm');
 
-// Some options are mandatory, you could use en empty array if none
-$options = array(
-    'french' => true,
-    'no_chords' => true
-);
+// Define how many semitones you want to transpose by.
+$transposer->transpose($song,-5);
+
+// If the song key is known, you can also transpose from key to key.
+// $transposer->transpose($song,'Abm');
+
+// The formatter has some options
+$options = [
+    'ignore_metadata' => 'title',
+];
 
 // Render !
-$html = $html_formatter->format($song,$options);
-$plaintext = $monospace_formatter->format($song,$options);
-$json = $json_formatter->format($song,$options);
+$html = $htmlFormatter->format($song, $options);
+$monospaced = $monospaceFormatter->format($song, $options);
+$json = $jsonFormatter->format($song, $options);
 ```
 
 ## Formatting options
+
 Simply give an array with values at true or false for each key/option.
+
 ``` php
-array(
-    'french' => true, // to display french chords (Do, Ré, Mi, Fa, Sol, La, Si, Do), including Song Key.
-    'no_chords' => true // to only get text (it removes "block" system for chords alignements)
-);
+[
+    'ignore_metadata' => ['title', 'subtitle'], // Do not render these types of metadata.
+    'no_chords' => true // Render text without chords.
+    'notation' => new ChordPro\Notation\GermanChordNotation(), // Choose output chord notation.
+];
 ```
 
-## Specific methods
+## The song key
 
-### Song
-- `$song->getKey([])` to obtain key of song, **with transposition**, you can alter langage english by default, or French ```$song->getKey(['french' => true]);```, options array is mandatory, you could use en empty array if none
-- `$song->getMetadataKey()` to obtain key of song, as defined in metadata's field "key"
+The key can be set/changed in the following ways:
 
-### Guess key of a song
-This fonctionnality is experimental and not reliable (20% of mistakes, tested with ~1000 songs), but can be very useful.
-Usage is very simple (you have to parse a song before as described before):
+- Manually, by calling `$song->setKey('A')`.
+- By parsing a song with metadata, e.g. `{key:A}`
+- By transposing the song to another key.
+
+You can get the key by calling:
+
+- `$song->getKey()` - get the key if it is defined by `setKey()`, otherwise, use the key from the metadata.
+- `$song->getMetadataKey()` - get the key from the metadata.
+
+If the song has no key defined, there is a possibility to guess it. This feature is experimental and not reliable (20% error rate, tested with ~1000 songs), but can be very useful.
+
 ``` php
 $guess = new ChordPro\GuessKey();
 $key = $guess->guessKey($song);
 ```
 
-## CSS Classes you can use with _HTML_ Formatter
+## Chord notations
 
-### Verses
-_Verses_ are one line composed by blocks of text + chords, chord with class `chordpro-chord` and text with class `chordpro-text`.
+The library supports several chord notations. You can also create your own (by implementing `ChordNotationInterface`). Notations are used for both parsing and formatting. So you can parse a song in German notation and display it as French:
 
-A typical `div` will be like this :
-``` html
-<div class="chordpro-verse">
-    <span class="chordpro-elem">
+```php
+$txt = 'A typical [fis]German [a]verse';
+$parser = new ChordPro\Parser();
+$notation = new ChordPro\Notation\GermanChordNotation();
+$song = $parser->parse($song, [$notation])
+```
+
+At this point, `fis` is recognized and saved as `F#m`, and `a` is saved as `Am`. Note that you can pass multiple notations to the parser, in order of precedence. This can be useful if you have mixed up chord notations in one song.
+
+Now, to show this song in French:
+
+```php
+$monospaceFormatter = new ChordPro\Formatter\MonospaceFormatter();
+$html = $monospaceFormatter->format($song, [
+    'notation' => $frenchNotation
+]);
+
+//           Fa♯m   Lam
+// A typical German verse
+```
+
+## Styling the HTML code
+
+### Song lines
+
+Lines are made up of blocks. Each block consists of a text and a chord. The chord has the class `chordpro-chord' and the text has the class `chordpro-text'.
+
+A typical line of the song looks like this:
+
+```html
+<div class="chordpro-line">
+    <span class="chordpro-block">
         <span class="chordpro-chord">C</span>
         <span class="chordpro-text">This is the </span>
     </span>
-    <span class="chordpro-elem">
+    <span class="chordpro-block">
         <span class="chordpro-chord">Dm</span>
         <span class="chordpro-text">beautiful song</span>
     </span>
 </div>
 ```
 
-### Chorus
-The _chorus_ (`soc`/`start_of_chorus`) will be contained inside ```<div class="chordpro-chorus"></div>```.
+### Song sections
+
+The ChordPro format allows to organize your songs into sections. The following song fragment:
+
+```chordpro
+{start_of_verse Verse 1}
+...
+{end_of_verse}
+
+{start_of_foobar}
+...
+{end_of_foobar}
+```
+
+Will be converted to:
+
+```html
+<div class="chordpro-verse-comment">Verse 1</div>
+<div class="chordpro-verse">
+    ...
+</div>
+
+<div class="chordpro-foobar">
+    ...
+</div>
+```
+
+You can use anything in place of `foobar`. However, the following shortcuts are supported:
+
+- `{soc}` → `{start_of_chorus}`
+- `{eoc}` → `{end_of_chorus}`
+- `{sov}` → `{start_of_verse}`
+- `{eov}` → `{end_of_verse}`
+- `{sob}` → `{start_of_bridge}`
+- `{eob}` → `{end_of_bridge}`
+- `{sot}` → `{start_of_tab}`
+- `{eot}` → `{end_of_tab}`
+- `{sog}` → `{start_of_grid}`
+- `{eog}` → `{end_of_grid}`
 
 ### Metadata
-By default, all _metadatas_ are placed inside ```<div class="chordpro-metadataname"></div>```.
-For example, the _title_ will be
-``` html
-<div class="chordpro-title">It's a great title !</div>
+
+The library reads ChordPro metadata and renders it as HTML in the following way:
+
+```chordpro
+{title: Let's Sing!}
+{c: Very loud}
 ```
-_ChordproPHP doesn't care about the metadata names, it just puts it after `chordpro-` :)_
-> Metatada's names are always converted to their long form (`c` will be recorded as `comment`) when using short names from [official directives](https://www.chordpro.org/chordpro/ChordPro-Directives.html)
+
+Becomes:
+
+``` html
+<div class="chordpro-title">Let's Sing!</div>
+<div class="chordpro-comment">Very loud</div>
+```
+
+The names of metadata are not restricted in any way, however, there are some standard ones described by ChordPro format. The following shortcuts are supported:
+
+- `{t}` → `{title}`
+- `{st}` → `{subtitle}`
+- `{c}` → `{comment}`
+- `{ci}` → `{comment_italic}`
+- `{cb}` → `{comment_box}`

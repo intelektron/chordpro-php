@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ChordPro;
 
 use ChordPro\Notation\ChordNotationInterface;
+use PHPUnit\Event\Runtime\PHP;
 
 /**
  * A class for chord manipulations.
@@ -29,17 +30,16 @@ class Chord
     private bool $isKnown = false;
 
     /**
-     * Static cache of different notation roots.
-     *
-     * @var string[][]
+     * @param string $originalName The original name of the chord.
+     * @param ChordNotationInterface[] $sourceNotations The notations to use, ordered by precedence.
      */
-    private static array $notationRoots = [];
-
-    public function __construct(private string $originalName, ?ChordNotationInterface $sourceNotation = null)
+    public function __construct(private string $originalName, array $sourceNotations = [])
     {
-        $rootChordTable = $this->getRootChordTable($sourceNotation);
+        foreach ($sourceNotations as $sourceNotation) {
+            $originalName = $sourceNotation->convertChordRootFromNotation($originalName);
+        }
 
-        foreach ($rootChordTable as $rootChord) {
+        foreach (self::ROOT_CHORDS as $rootChord) {
             if (str_starts_with($originalName, $rootChord)) {
                 $this->rootChord = $rootChord;
                 $this->ext = substr($originalName, strlen($rootChord));
@@ -55,9 +55,12 @@ class Chord
     /**
      * Create multiple chords from slices like [C/E].
      *
+     * @param string $text The text to parse.
+     * @param ChordNotationInterface[] $notations The notations to use, ordered by precedence.
+     *
      * @return Chord[]
      */
-    public static function fromSlice(string $text, ?ChordNotationInterface $notation = null): array
+    public static function fromSlice(string $text, array $notations = []): array
     {
         if ($text === '') {
             return [];
@@ -65,7 +68,7 @@ class Chord
         $chords = explode('/', $text);
         $result = [];
         foreach ($chords as $chord) {
-            $result[] = new Chord($chord, $notation);
+            $result[] = new Chord($chord, $notations);
         }
         return $result;
     }
@@ -78,25 +81,6 @@ class Chord
     public function isMinor(): bool
     {
         return substr($this->rootChord, -1) === 'm';
-    }
-
-    /**
-     * @return string[] The root chords in the notation.
-     */
-    private function getRootChordTable(?ChordNotationInterface $notation): array
-    {
-        if (is_null($notation)) {
-            return self::ROOT_CHORDS;
-        } elseif (isset($this->notationRoots[$notation::class])) {
-            return $this->notationRoots[$notation::class];
-        } else {
-            $rootChordTable = [];
-            foreach (self::ROOT_CHORDS as $rootChord) {
-                $rootChordTable[] = $notation->convertChordRootFromNotation($rootChord);
-            }
-            $this->notationRoots[$notation::class] = $rootChordTable;
-            return $rootChordTable;
-        }
     }
 
     public function getRootChord(?ChordNotationInterface $targetNotation = null): string

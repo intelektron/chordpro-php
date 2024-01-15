@@ -8,7 +8,7 @@ use ChordPro\Notation\ChordNotationInterface;
 
 abstract class Formatter
 {
-    protected ?ChordNotationInterface $notation;
+    protected ?ChordNotationInterface $notation = null;
     protected bool $noChords = false;
 
     /**
@@ -21,6 +21,10 @@ abstract class Formatter
      */
     public function setOptions(array $options): void
     {
+        $this->notation = null;
+        $this->noChords = false;
+        $this->ignoreMetadata = [];
+
         if (isset($options['notation']) && $options['notation'] instanceof ChordNotationInterface) {
             $this->notation = $options['notation'];
         }

@@ -1,12 +1,14 @@
 <?php
 
-$txt = "{t:ChordpropPHP Song}
+$txt = "{t:Chordpro-PHP Song}
 {st:Nicolas Wurtz}
 {c:GPL3 2019 Nicolas Wurtz}
 {key:C}
+
+# Let's start it!
 [C]This is the [Dm]beautiful [Em]song
-I [Dm]wroted in [F/G]Chordpro for[C]mat [Dm/F]
-Let's singing a[C/E]long
+I [Dm]wrote in [F/G]Chordpro for[C]mat [Dm/F]
+Let's sing it a[C/E]long
 [Bb] It's ea[Dm]sy to do [F]that [C]
 
 {soc}
@@ -21,40 +23,51 @@ Let's singing a[C/E]long
 require __dir__ . '/../vendor/autoload.php';
 
 $parser = new ChordPro\Parser();
-$html = new ChordPro\Formatter\HtmlFormatter();
-$monospace = new ChordPro\Formatter\MonospaceFormatter();
-$json = new ChordPro\Formatter\JSONFormatter();
+$htmlFormatter = new ChordPro\Formatter\HtmlFormatter();
+$monospaceFormatter = new ChordPro\Formatter\MonospaceFormatter();
+$jsonFormatter = new ChordPro\Formatter\JSONFormatter();
 
+// Parse the song!
 $song = $parser->parse($txt);
 
-//$guess = new ChordPro\GuessKey();
-//$key = $guess->guessKey($song);
+// Format it!
+$html = $htmlFormatter->format($song);
+$monospaced = $monospaceFormatter->format($song);
+$json = $jsonFormatter->format($song);
 
+// Change notation!
+$frenchNotation = new ChordPro\Notation\FrenchChordNotation();
+$html_french = $htmlFormatter->format($song, ['notation' => $frenchNotation]);
+
+// Transpose it!
 $transposer = new ChordPro\Transposer();
-//$transposer->transpose($song,'Dm');
-
-$options = array('french' => false, 'no_chords' => false);
-$txt_html = $html->format($song,$options);
-$txt = $monospace->format($song,$options);
-$txt_json = $json->format($song,$options);
+$transposer->transpose($song, 2);
+$utfNotation = new ChordPro\Notation\UtfChordNotation();
+$html_transposed = $htmlFormatter->format($song, ['notation' => $utfNotation]);
 
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>ChordPro PHP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Test ChordProPHP">
     <meta name="author" content="Nicolas Wurtz">
+    <meta name="author" content="Grzegorz Pietrzak">
     <link rel="stylesheet" href="example.css" />
   </head>
   <body>
       <h1>HTML</h1>
-      <?php echo $txt_html; ?>
-      <h1>Plain text</h1>
-      <?php echo '<pre>'.$txt.'</pre>'; ?>
+      <?php echo $html; ?>
+      <h1>HTML - French Notation</h1>
+      <?php echo $html_french; ?>
+      <h1>HTML - Transposed +2</h1>
+      <?php echo $html_transposed; ?>
+      <h1>Monospaced</h1>
+      <pre><?php echo $monospaced; ?></pre>
       <h1>JSON</h1>
+      <pre style="height: 300px; overflow: auto;"><?php echo $json; ?></pre>
   </body>
 </html>

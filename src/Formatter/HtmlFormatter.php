@@ -12,7 +12,7 @@ use ChordPro\Song;
 
 class HtmlFormatter extends Formatter implements FormatterInterface
 {
-    public function format(Song $song, array $options): string
+    public function format(Song $song, array $options = []): string
     {
         $this->setOptions($options);
 
@@ -28,7 +28,7 @@ class HtmlFormatter extends Formatter implements FormatterInterface
         if ($line instanceof Metadata) {
             return $this->getMetadataHtml($line);
         } elseif ($line instanceof EmptyLine) {
-            return '<br />';
+            return "<br />\n";
         } elseif ($line instanceof Lyrics) {
             return (true === $this->noChords) ? $this->getLyricsOnlyHtml($line) : $this->getLyricsHtml($line);
         } else {
@@ -53,24 +53,24 @@ class HtmlFormatter extends Formatter implements FormatterInterface
         }
 
         $match = [];
-        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match) !== false) {
+        if (preg_match('/^start_of_(.*)/', $metadata->getName(), $match) === 1) {
             $type = preg_replace('/[\W_\-]/', '', $match[1]);
             $content = '';
             if (null !== $metadata->getValue()) {
-                $content = '<div class="chordpro-'.$type.'-comment">'.$metadata->getValue().'</div>';
+                $content = '<div class="chordpro-'.$type.'-comment">'.$metadata->getValue()."</div>\n";
             }
-            return $content.'<div class="chordpro-'.$type.'">';
-        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName()) !== false) {
-            return '</div>';
+            return $content.'<div class="chordpro-'.$type.'">'."\n";
+        } elseif (preg_match('/^end_of_(.*)/', $metadata->getName()) === 1) {
+            return "</div>\n";
         } else {
             $name = preg_replace('/[\W_\-]/', '', mb_strtolower($metadata->getName()));
-            return '<div class="chordpro-'.$name.'">'.$metadata->getValue().'</div>';
+            return '<div class="chordpro-'.$name.'">'.$metadata->getValue()."</div>\n";
         }
     }
 
     private function getLyricsHtml(Lyrics $lyrics): string
     {
-        $verse = '<div class="chordpro-verse">';
+        $line = '<div class="chordpro-line">'."\n";
         foreach ($lyrics->getBlocks() as $block) {
 
             $chords = [];
@@ -78,7 +78,11 @@ class HtmlFormatter extends Formatter implements FormatterInterface
             $slicedChords = $block->getChords();
             foreach ($slicedChords as $slicedChord) {
                 if ($slicedChord->isKnown()) {
-                    $chords[] = $slicedChord->getRootChord($this->notation).'<sup>'.$slicedChord->getExt($this->notation).'</sup>';
+                    $ext = $slicedChord->getExt();
+                    if ($ext !== '') {
+                        $ext = '<sup>'.$ext.'</sup>';
+                    }
+                    $chords[] = $slicedChord->getRootChord($this->notation).$ext;
                 } else {
                     $chords[] = $slicedChord->getOriginalName();
                 }
@@ -87,22 +91,22 @@ class HtmlFormatter extends Formatter implements FormatterInterface
             $chord = implode('/', $chords);
             $text = $this->blankChars($block->getText());
 
-            $verse .= '<span class="chordpro-elem">
-              <span class="chordpro-chord">'.$chord.'</span>
-              <span class="chordpro-text">'.$text.'</span>
-            </span>';
+            $line .= '<span class="chordpro-block">' .
+              '<span class="chordpro-chord">'.$chord.'</span>' .
+              '<span class="chordpro-text">'.$text.'</span>' .
+            '</span>';
         }
-        $verse .= '</div>';
-        return $verse;
+        $line .= "\n</div>\n";
+        return $line;
     }
 
     private function getLyricsOnlyHtml(Lyrics $lyrics): string
     {
-        $verse = '<div class="chordpro-verse">';
+        $line = '<div class="chordpro-line">'."\n";
         foreach ($lyrics->getBlocks() as $block) {
-            $verse .= ltrim($block->getText());
+            $line .= ltrim($block->getText());
         }
-        $verse .= '</div>';
-        return $verse;
+        $line .= "\n</div>\n";
+        return $line;
     }
 }

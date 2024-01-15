@@ -12,7 +12,15 @@ use ChordPro\Notation\ChordNotationInterface;
 
 class Parser
 {
-    public function parse(string $text, ?ChordNotationInterface $sourceNotation = null): Song
+    /**
+     * Parse the song text.
+     *
+     * @param string $text The song text to parse.
+     * @param ChordNotationInterface[] $sourceNotations The notations to use, ordered by precedence.
+     *
+     * @return Song
+     */
+    public function parse(string $text, array $sourceNotations = []): Song
     {
         $lines = [];
         $split = preg_split('~\R~', $text);
@@ -30,7 +38,7 @@ class Parser
                         $lines[] = new EmptyLine();
                         break;
                     default:
-                        $lines[] = $this->parseLyrics($line, $sourceNotation);
+                        $lines[] = $this->parseLyrics($line, $sourceNotations);
                 }
             }
         }
@@ -67,9 +75,11 @@ class Parser
      * Parse a song line, assuming it contains lyrics.
      *
      * @param string $line A line of the song.
+     * @param ChordNotationInterface[] $sourceNotations The notations to use, ordered by precedence.
+     *
      * @return \ChordPro\Line\Lyrics The structured lyrics
      */
-    private function parseLyrics(string $line, ?ChordNotationInterface $sourceNotation = null): Lyrics
+    private function parseLyrics(string $line, array $sourceNotations = []): Lyrics
     {
         $blocks = [];
         $explodedLine = explode('[', $line);
@@ -80,7 +90,7 @@ class Parser
                 // If the fragment consists of only a chord without text.
                 if (isset($chordWithText[1]) && $chordWithText[1] == '') {
                     $blocks[] = new Block(
-                        chords: Chord::fromSlice($chordWithText[0], $sourceNotation),
+                        chords: Chord::fromSlice($chordWithText[0], $sourceNotations),
                         text: ''
                     );
                 }
@@ -93,7 +103,7 @@ class Parser
                     // If there is a space after "]", threat it as separate blocks.
                 } elseif (substr($chordWithText[1], 0, 1) == " ") {
                     $blocks[] = new Block(
-                        chords: Chord::fromSlice($chordWithText[0], $sourceNotation),
+                        chords: Chord::fromSlice($chordWithText[0], $sourceNotations),
                         text: ''
                     );
                     $blocks[] = new Block(
@@ -103,7 +113,7 @@ class Parser
                     // If there is no space after "]", threat it as chord with text.
                 } else {
                     $blocks[] = new Block(
-                        chords: Chord::fromSlice($chordWithText[0], $sourceNotation),
+                        chords: Chord::fromSlice($chordWithText[0], $sourceNotations),
                         text: $chordWithText[1]
                     );
                 }

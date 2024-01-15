@@ -49,8 +49,8 @@ class Metadata extends Line
             'eob' => 'end_of_bridge',
             'sot' => 'start_of_tab',
             'eot' => 'end_of_tab',
-            'sot' => 'start_of_grid',
-            'eot' => 'end_of_grid',
+            'sog' => 'start_of_grid',
+            'eog' => 'end_of_grid',
             default => $name,
         };
     }
