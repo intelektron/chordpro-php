@@ -69,18 +69,22 @@ class JSONFormatter extends Formatter implements FormatterInterface
         $return = [];
         foreach ($lyrics->getBlocks() as $block) {
             $chords = [];
+            $originalChords = [];
             $slicedChords = $block->getChords();
             foreach ($slicedChords as $slicedChord) {
                 if ($slicedChord->isKnown()) {
                     $chords[] = $slicedChord->getRootChord($this->notation).$slicedChord->getExt($this->notation);
+                    $originalChords[] = $slicedChord->getRootChord().$slicedChord->getExt();
                 } else {
                     $chords[] = $slicedChord->getOriginalName();
+                    $originalChords[] = $slicedChord->getOriginalName();
                 }
             }
             $chord = implode('/', $chords).' ';
+            $originalChord = implode('/', $originalChords).' ';
 
             $text = $block->getText();
-            $return[] = ['chord' => trim($chord), 'text' => $text];
+            $return[] = ['chord' => trim($chord), 'text' => $text, 'originalChord' => trim($originalChord)];
         }
         return [
             'type' => 'line',

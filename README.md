@@ -1,25 +1,25 @@
-# The chordpro-php library
+# The chordpro-php library 🎸
 
 A simple tool to parse, transpose & format [ChordPro](https://www.chordpro.org) songs with lyrics & chords.
 
-Forked from <https://github.com/nicolaswurtz/chordpro-php> by [Nicolaz Wurtz](https://github.com/nicolaswurtz), on LGPL-3 license.
+_Forked from <https://github.com/nicolaswurtz/chordpro-php> by [Nicolaz Wurtz](https://github.com/nicolaswurtz), on LGPL-3 license._
 
-The following output formats are currently supported
+The following output formats are currently supported:
 
-- HTML (verses contain blocks with embedded `span` for aligning chords with lyrics)
-- JSON (verses are arrays of chords and lyrics for alignment purposes)
-- Plain text (chords are aligned with monospace text thanks to whitespace)
+- **HTML** (verses contain blocks with embedded `span` for aligning chords with lyrics).
+- **JSON** (verses are arrays of chords and lyrics for alignment purposes).
+- **Plain text** (chords are aligned with monospace text thanks to whitespace).
 
-And provides some extra functionality:
+The library provides some extra functionality:
 
 - Tranpose chords by semitones or to the target key.
 - Parse and display various chord notations:
-  - French (`Do`, `Ré`, `Mi`)
-  - German (`Fis`, `a`)
-  - With UTF characters (`A♭`, `F♯`)
+  - French (`Do`, `Ré`, `Mi`).
+  - German (`Fis`, `a`).
+  - With UTF characters (`A♭`, `F♯`).
 - Guess the key of a song.
 
-## Install
+## Installation
 
 Via composer:
 
@@ -29,17 +29,19 @@ composer require intelektron/chordpro-php
 
 ## Usage
 
-See `web/example.php` for demo with CSS styling.
+See [web/example.php] for demo with CSS styling.
 
 ``` php
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
 
-$txt = "{t:ChordpropPHP Song}
+$txt = "{t:Chordpro-PHP Song}
 {st:Nicolas Wurtz}
 {c:GPL3 2019 Nicolas Wurtz}
 {key:C}
+
+# Let's start it!
 [C]This is the [Dm]beautiful [Em]song
 I [Dm]wrote in [F/G]Chordpro for[C]mat [Dm/F]
 Let's sing it a[C/E]long
@@ -51,7 +53,8 @@ Let's sing it a[C/E]long
 {eoc}
 
 {c:Final}
-[Em/D]This is the [Bb]end.";
+[Em/D]This is the [Bb]end.
+";
 
 $parser = new ChordPro\Parser();
 
@@ -67,7 +70,7 @@ $song = $parser->parse($txt);
 $transposer = new ChordPro\Transposer();
 
 // Define how many semitones you want to transpose by.
-$transposer->transpose($song,-5);
+$transposer->transpose($song, -5);
 
 // If the song key is known, you can also transpose from key to key.
 // $transposer->transpose($song,'Abm');
@@ -100,7 +103,7 @@ Simply give an array with values at true or false for each key/option.
 The key can be set/changed in the following ways:
 
 - Manually, by calling `$song->setKey('A')`.
-- By parsing a song with metadata, e.g. `{key:A}`
+- By parsing a song with metadata, e.g. `{key:A}`.
 - By transposing the song to another key.
 
 You can get the key by calling:
@@ -117,7 +120,7 @@ $key = $guess->guessKey($song);
 
 ## Chord notations
 
-The library supports several chord notations. You can also create your own (by implementing `ChordNotationInterface`). Notations are used for both parsing and formatting. So you can parse a song in German notation and display it as French:
+The library supports several chord notations. You can also create your own (by implementing [src/Notation/ChordNotationInterface.php]). Notations are used for both parsing and formatting. So you can parse a song in German notation and display it as French:
 
 ```php
 $txt = 'A typical [fis]German [a]verse';
@@ -126,7 +129,7 @@ $notation = new ChordPro\Notation\GermanChordNotation();
 $song = $parser->parse($song, [$notation])
 ```
 
-At this point, `fis` is recognized and saved as `F#m`, and `a` is saved as `Am`. Note that you can pass multiple notations to the parser, in order of precedence. This can be useful if you have mixed up chord notations in one song.
+At this point, `fis` is recognized and saved internally as `F#m`, and `a` is saved as `Am`. Note that you can pass multiple notations to the parser, in order of precedence. This can be useful if you have mixed up chord notations in one song.
 
 Now, to show this song in French:
 
@@ -140,26 +143,30 @@ $html = $monospaceFormatter->format($song, [
 // A typical German verse
 ```
 
+The `UtfChordFormatter` provides a nice-looking chords with `♭` and `♯` symbols instead of ASCII characters.
+
 ## Styling the HTML code
 
 ### Song lines
 
-Lines are made up of blocks. Each block consists of a text and a chord. The chord has the class `chordpro-chord' and the text has the class `chordpro-text'.
+Lines are made up of blocks. Each block consists of a text and a chord. The chord has the class `chordpro-chord` and the text has the class `chordpro-text`.
 
 A typical line of the song looks like this:
 
 ```html
 <div class="chordpro-line">
     <span class="chordpro-block">
-        <span class="chordpro-chord">C</span>
+        <span class="chordpro-chord" data-chord="C">C</span>
         <span class="chordpro-text">This is the </span>
     </span>
-    <span class="chordpro-block">
+    <span class="chordpro-block" data-chord="Dm">
         <span class="chordpro-chord">Dm</span>
         <span class="chordpro-text">beautiful song</span>
     </span>
 </div>
 ```
+
+The `data-chord` attribute stores an English representation of the chord, regardless of the output notation.
 
 ### Song sections
 

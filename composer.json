@@ -33,6 +33,19 @@
             "email": "grzegorz.pietrzak@gmail.com"
         }
     ],
+    "scripts": {
+        "test": "phpunit tests",
+        "phpstan": "phpstan analyse",
+        "php-compatibility": "phpcs --standard=phpcs.xml",
+        "cs": "php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff",
+        "cs-fix": "php-cs-fixer fix --config=.php-cs-fixer.php",
+        "check": [
+            "@test",
+            "@phpstan",
+            "@php-compatibility",
+            "@cs"
+        ]
+    },
     "config": {
         "allow-plugins": {
             "phpstan/extension-installer": true

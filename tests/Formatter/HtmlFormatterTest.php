@@ -20,7 +20,7 @@ final class HtmlFormatterTest extends TestCase
             '<br />' . "\n" .
             '<div class="chordpro-verse">' . "\n" .
             '<div class="chordpro-line">' . "\n" .
-            '<span class="chordpro-block"><span class="chordpro-chord">C<sup>7</sup></span><span class="chordpro-text">Test&nbsp;</span></span><span class="chordpro-block"><span class="chordpro-chord">D</span><span class="chordpro-text">Test2</span></span>' . "\n" .
+            '<span class="chordpro-block"><span class="chordpro-chord" data-chord="C7">C<sup>7</sup></span><span class="chordpro-text">Test&nbsp;</span></span><span class="chordpro-block"><span class="chordpro-chord" data-chord="D">D</span><span class="chordpro-text">Test2</span></span>' . "\n" .
             '</div>' . "\n" .
             '</div>' . "\n";
 
@@ -61,7 +61,7 @@ final class HtmlFormatterTest extends TestCase
         $expected = '<br />' . "\n" .
             '<div class="chordpro-verse">' . "\n" .
             '<div class="chordpro-line">' . "\n" .
-            '<span class="chordpro-block"><span class="chordpro-chord">C<sup>7</sup></span><span class="chordpro-text">Test&nbsp;</span></span><span class="chordpro-block"><span class="chordpro-chord">D</span><span class="chordpro-text">Test2</span></span>' . "\n" .
+            '<span class="chordpro-block"><span class="chordpro-chord" data-chord="C7">C<sup>7</sup></span><span class="chordpro-text">Test&nbsp;</span></span><span class="chordpro-block"><span class="chordpro-chord" data-chord="D">D</span><span class="chordpro-text">Test2</span></span>' . "\n" .
             '</div>' . "\n" .
             '</div>' . "\n";
 

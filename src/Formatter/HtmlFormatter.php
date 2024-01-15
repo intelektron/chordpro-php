@@ -73,26 +73,31 @@ class HtmlFormatter extends Formatter implements FormatterInterface
         $line = '<div class="chordpro-line">'."\n";
         foreach ($lyrics->getBlocks() as $block) {
 
+            $originalChords = [];
             $chords = [];
 
             $slicedChords = $block->getChords();
             foreach ($slicedChords as $slicedChord) {
                 if ($slicedChord->isKnown()) {
-                    $ext = $slicedChord->getExt();
+                    $ext = $slicedChord->getExt($this->notation);
                     if ($ext !== '') {
                         $ext = '<sup>'.$ext.'</sup>';
                     }
+
                     $chords[] = $slicedChord->getRootChord($this->notation).$ext;
+                    $originalChords[] = $slicedChord->getRootChord().$slicedChord->getExt();
                 } else {
                     $chords[] = $slicedChord->getOriginalName();
+                    $originalChords[] = $slicedChord->getOriginalName();
                 }
             }
 
             $chord = implode('/', $chords);
+            $originalChord = implode('/', $originalChords);
             $text = $this->blankChars($block->getText());
 
             $line .= '<span class="chordpro-block">' .
-              '<span class="chordpro-chord">'.$chord.'</span>' .
+              '<span class="chordpro-chord" data-chord="'.$originalChord.'">'.$chord.'</span>' .
               '<span class="chordpro-text">'.$text.'</span>' .
             '</span>';
         }
