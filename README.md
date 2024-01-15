@@ -1,6 +1,8 @@
 # The chordpro-php library 🎸
 
-A simple tool to parse, transpose & format [ChordPro](https://www.chordpro.org) songs with lyrics & chords.
+![Workflow status](https://github.com/intelektron/chordpro-php/actions/workflows/codequality.yml/badge.svg)
+
+A simple tool to parse, transpose & format [ChordPro](https://www.chordpro.org) songs with lyrics & chords. Compatible with PHP 8.1 and above.
 
 _Forked from <https://github.com/nicolaswurtz/chordpro-php> by [Nicolaz Wurtz](https://github.com/nicolaswurtz), on LGPL-3 license._
 
@@ -29,7 +31,7 @@ composer require intelektron/chordpro-php
 
 ## Usage
 
-See [web/example.php] for demo with CSS styling.
+See [web/example.php](web/example.php) for demo with CSS styling.
 
 ``` php
 <?php
@@ -86,6 +88,8 @@ $monospaced = $monospaceFormatter->format($song, $options);
 $json = $jsonFormatter->format($song, $options);
 ```
 
+![Screenshot](web/example.png)
+
 ## Formatting options
 
 Simply give an array with values at true or false for each key/option.
@@ -120,7 +124,7 @@ $key = $guess->guessKey($song);
 
 ## Chord notations
 
-The library supports several chord notations. You can also create your own (by implementing [src/Notation/ChordNotationInterface.php]). Notations are used for both parsing and formatting. So you can parse a song in German notation and display it as French:
+The library supports several chord notations. You can also create your own (by implementing [ChordNotationInterface.php](src/Notation/ChordNotationInterface.php]). Notations are used for both parsing and formatting. So you can parse a song in German notation and display it as French:
 
 ```php
 $txt = 'A typical [fis]German [a]verse';
