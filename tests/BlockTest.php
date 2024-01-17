@@ -12,9 +12,10 @@ final class BlockTest extends TestCase
     {
         $text = 'This is a test';
         $chord = new Chord('C');
-        $block = new Block([$chord], $text);
+        $block = new Block([$chord], $text, true);
 
         $this->assertSame([$chord], $block->getChords(), 'Chords are not returned');
         $this->assertSame($text, $block->getText(), 'Text is not returned');
+        $this->assertTrue($block->isLineEnd());
     }
 }

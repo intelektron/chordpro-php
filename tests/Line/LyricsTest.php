@@ -15,7 +15,10 @@ final class LyricsTest extends TestCase
         $chord = new Chord('C');
         $block = new Block([$chord], $text);
 
-        $lyrics = new Lyrics([$block]);
+        $lyrics = new Lyrics([$block], true, true, true);
         $this->assertSame([$block], $lyrics->getBlocks(), 'Blocks are not returned');
+        $this->assertTrue($lyrics->hasChords());
+        $this->assertTrue($lyrics->hasText());
+        $this->assertTrue($lyrics->hasInlineChords());
     }
 }
