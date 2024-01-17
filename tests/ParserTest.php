@@ -78,12 +78,12 @@ final class ParserTest extends TestCase
                     assert($line instanceof Lyrics);
                     $this->assertCount(4, $line->getBlocks());
 
-                    // Sing it [D]loud, sing it [G7/E]cle[A#m]ar,
+                    // Sing it [D]like ą, sing it [G7/E]cle[A#m]ar,
 
                     $this->assertSame('Sing it ', $line->getBlocks()[0]->getText());
                     $this->assertCount(0, $line->getBlocks()[0]->getChords());
 
-                    $this->assertSame('loud, sing it ', $line->getBlocks()[1]->getText());
+                    $this->assertSame('like ą, sing it ', $line->getBlocks()[1]->getText());
                     $this->assertCount(1, $line->getBlocks()[1]->getChords());
                     $this->assertSame('D', $line->getBlocks()[1]->getChords()[0]->getRootChord());
                     $this->assertSame('', $line->getBlocks()[1]->getChords()[0]->getExt());

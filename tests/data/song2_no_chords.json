@@ -1,0 +1,89 @@
+[
+    {
+        "type": "metadata",
+        "name": "title",
+        "value": "Test",
+        "humanName": "Title"
+    },
+    {
+        "type": "metadata",
+        "name": "subtitle",
+        "value": "TestSub",
+        "humanName": "Subtitle"
+    },
+    {
+        "type": "metadata",
+        "name": "comment",
+        "value": "Comment1",
+        "humanName": "Comment"
+    },
+    {
+        "type": "metadata",
+        "name": "key",
+        "value": "C",
+        "humanName": "Key"
+    },
+    {
+        "type": "section_start",
+        "sectionType": "verse",
+        "label": "Verse"
+    },
+    {
+        "type": "line",
+        "text": "Test1 Test2"
+    },
+    {
+        "type": "line",
+        "text": "Test3 Test4"
+    },
+    {
+        "type": "empty_line"
+    },
+    {
+        "type": "line",
+        "text": "Test5 Test6"
+    },
+    {
+        "type": "section_end",
+        "sectionType": "verse"
+    },
+    {
+        "type": "line",
+        "text": "x"
+    },
+    {
+        "type": "line",
+        "text": "Test7~"
+    },
+    {
+        "type": "empty_line"
+    },
+    {
+        "type": "section_start",
+        "sectionType": "chorus"
+    },
+    {
+        "type": "line",
+        "text": "Test8 ~"
+    },
+    {
+        "type": "line",
+        "text": "Test9 ~"
+    },
+    {
+        "type": "line",
+        "text": "Test10"
+    },
+    {
+        "type": "line",
+        "text": "Test11 Longer Line Tab"
+    },
+    {
+        "type": "section_end",
+        "sectionType": "chorus"
+    },
+    {
+        "type": "comment",
+        "content": "Comment"
+    }
+]

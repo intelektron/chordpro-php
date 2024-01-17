@@ -54,11 +54,32 @@ class JSONFormatter extends Formatter implements FormatterInterface
         if (in_array($metadata->getName(), $this->ignoreMetadata, true)) {
             return [];
         }
-        return [
+
+        if ($metadata->isSectionStart()) {
+            $metadataItem = [
+                'type' => 'section_start',
+                'sectionType' => $metadata->getSectionType(),
+            ];
+            if (null !== $metadata->getValue()) {
+                $metadataItem['label'] = $metadata->getValue();
+            }
+        } elseif ($metadata->isSectionEnd()) {
+            $metadataItem = [
+                'type' => 'section_end',
+                'sectionType' => $metadata->getSectionType(),
+            ];
+        } else {
+            $metadataItem = [
                 'type' => 'metadata',
                 'name' => $metadata->getName(),
                 'value' => $metadata->getValue(),
-        ];
+            ];
+            if ($metadata->getHumanName() != $metadata->getName()) {
+                $metadataItem['humanName'] = $metadata->getHumanName();
+            }
+        }
+
+        return $metadataItem;
     }
 
     /**
@@ -80,14 +101,26 @@ class JSONFormatter extends Formatter implements FormatterInterface
                     $originalChords[] = $slicedChord->getOriginalName();
                 }
             }
-            $chord = implode('/', $chords).' ';
-            $originalChord = implode('/', $originalChords).' ';
+            $chord = implode('/', $chords);
+            $originalChord = implode('/', $originalChords);
 
             $text = $block->getText();
-            $return[] = ['chord' => trim($chord), 'text' => $text, 'originalChord' => trim($originalChord)];
+            $blockArray = [];
+            if ($text !== '') {
+                $blockArray['text'] = rtrim($text);
+            }
+            $chord = trim($chord);
+            if ($chord !== '') {
+                $blockArray['chord'] = $chord;
+                $blockArray['originalChord'] = $originalChord;
+            }
+            if ($block->isLineEnd()) {
+                $blockArray['lineEnd'] = true;
+            }
+            $return[] = $blockArray;
         }
         return [
-            'type' => 'line',
+            'type' => $lyrics->hasInlineChords() ? 'line_inline' : 'line',
             'blocks' => $return,
         ];
     }
@@ -97,13 +130,18 @@ class JSONFormatter extends Formatter implements FormatterInterface
      */
     private function getLyricsOnlyJSON(Lyrics $lyrics): array
     {
-        $return = '';
+        $text = '';
         foreach ($lyrics->getBlocks() as $block) {
-            $return .= ltrim($block->getText());
+            $text .= ltrim($block->getText());
         }
-        return [
-            'type' => 'line',
-            'text' => $return,
-        ];
+        $text = rtrim($text);
+        if ($text === '') {
+            return [];
+        } else {
+            return [
+                'type' => 'line',
+                'text' => $text,
+            ];
+        }
     }
 }

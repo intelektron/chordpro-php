@@ -11,7 +11,7 @@ class Block
     /**
      * @param Chord[] $chords The chords.
      */
-    public function __construct(private array $chords, private string $text)
+    public function __construct(private array $chords, private string $text, private bool $lineEnd = false)
     {
     }
 
@@ -28,5 +28,10 @@ class Block
     public function getText(): string
     {
         return $this->text;
+    }
+
+    public function isLineEnd(): bool
+    {
+        return $this->lineEnd;
     }
 }

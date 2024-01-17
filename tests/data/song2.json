@@ -1,0 +1,216 @@
+[
+    {
+        "type": "metadata",
+        "name": "title",
+        "value": "Test",
+        "humanName": "Title"
+    },
+    {
+        "type": "metadata",
+        "name": "subtitle",
+        "value": "TestSub",
+        "humanName": "Subtitle"
+    },
+    {
+        "type": "metadata",
+        "name": "comment",
+        "value": "Comment1",
+        "humanName": "Comment"
+    },
+    {
+        "type": "metadata",
+        "name": "key",
+        "value": "C",
+        "humanName": "Key"
+    },
+    {
+        "type": "section_start",
+        "sectionType": "verse",
+        "label": "Verse"
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "text": "Test1 Test2"
+            }
+        ]
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "text": "Test3",
+                "chord": "C7\/E",
+                "originalChord": "C7\/E"
+            },
+            {
+                "text": "Test4",
+                "chord": "D",
+                "originalChord": "D"
+            }
+        ]
+    },
+    {
+        "type": "empty_line"
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "text": "Test5"
+            },
+            {
+                "chord": "E",
+                "originalChord": "E"
+            },
+            {
+                "text": " Test6"
+            }
+        ]
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "chord": "C7",
+                "originalChord": "C7"
+            },
+            {
+                "chord": "D",
+                "originalChord": "D"
+            }
+        ]
+    },
+    {
+        "type": "section_end",
+        "sectionType": "verse"
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "chord": "C",
+                "originalChord": "C"
+            },
+            {
+                "chord": "G",
+                "originalChord": "G"
+            }
+        ]
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "chord": "C",
+                "originalChord": "C"
+            },
+            {
+                "chord": "G",
+                "originalChord": "G"
+            }
+        ]
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "text": "x"
+            },
+            {
+                "chord": "C",
+                "originalChord": "C"
+            },
+            {
+                "chord": "G",
+                "originalChord": "G"
+            }
+        ]
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "text": "Test7~"
+            }
+        ]
+    },
+    {
+        "type": "empty_line"
+    },
+    {
+        "type": "section_start",
+        "sectionType": "chorus"
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "text": "Test8 ~",
+                "chord": "C7",
+                "originalChord": "C7"
+            },
+            {
+                "chord": "D",
+                "originalChord": "D"
+            }
+        ]
+    },
+    {
+        "type": "line",
+        "blocks": [
+            {
+                "text": "Test9 ~"
+            },
+            {
+                "chord": "D",
+                "originalChord": "D"
+            }
+        ]
+    },
+    {
+        "type": "line_inline",
+        "blocks": [
+            {
+                "text": "Test10"
+            },
+            {
+                "chord": "D",
+                "originalChord": "D",
+                "lineEnd": true
+            },
+            {
+                "chord": "C",
+                "originalChord": "C",
+                "lineEnd": true
+            }
+        ]
+    },
+    {
+        "type": "line_inline",
+        "blocks": [
+            {
+                "text": "Test11 Longer Line Tab"
+            },
+            {
+                "chord": "E",
+                "originalChord": "E",
+                "lineEnd": true
+            },
+            {
+                "chord": "FMaj7\/E",
+                "originalChord": "FMaj7\/E",
+                "lineEnd": true
+            }
+        ]
+    },
+    {
+        "type": "section_end",
+        "sectionType": "chorus"
+    },
+    {
+        "type": "comment",
+        "content": "Comment"
+    }
+]
