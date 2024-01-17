@@ -12,7 +12,7 @@ class Lyrics extends Line
     /**
      * @param \ChordPro\Block[] $blocks The blocks of the line.
      */
-    public function __construct(private array $blocks)
+    public function __construct(private array $blocks = [], private bool $hasChords = false, private bool $hasText = false, private bool $hasInlineChords = false)
     {
     }
 
@@ -24,5 +24,20 @@ class Lyrics extends Line
     public function getBlocks(): array
     {
         return $this->blocks;
+    }
+
+    public function hasChords(): bool
+    {
+        return $this->hasChords;
+    }
+
+    public function hasText(): bool
+    {
+        return $this->hasText;
+    }
+
+    public function hasInlineChords(): bool
+    {
+        return $this->hasInlineChords;
     }
 }

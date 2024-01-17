@@ -8,7 +8,7 @@
 {c: Seriously!}
 
 {start_of_chorus: Refrain}
-Sing it [D]loud, sing it [G7/E]cle[A#m]ar,
+Sing it [D]like ą, sing it [G7/E]cle[A#m]ar,
 {end_of_chorus}
 
 {start_of_verse}

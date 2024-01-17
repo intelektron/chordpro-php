@@ -23,22 +23,24 @@ class Parser
     public function parse(string $text, array $sourceNotations = []): Song
     {
         $lines = [];
-        $split = preg_split('~\R~', $text);
+        $split = preg_split("/\\r\\n|\\r|\\n/", $text);
         if ($split !== false) {
             foreach ($split as $line) {
-                $line = trim($line);
-                switch (substr($line, 0, 1)) {
+                $line = preg_replace('/^\s+/', '', $line);
+                $line = preg_replace('/\s+$/', '', (string) $line);
+
+                switch (substr((string) $line, 0, 1)) {
                     case "{":
-                        $lines[] = $this->parseMetadata($line);
+                        $lines[] = $this->parseMetadata((string) $line);
                         break;
                     case "#":
-                        $lines[] = new Comment(trim(substr($line, 1)));
+                        $lines[] = new Comment(trim(substr((string) $line, 1)));
                         break;
                     case "":
                         $lines[] = new EmptyLine();
                         break;
                     default:
-                        $lines[] = $this->parseLyrics($line, $sourceNotations);
+                        $lines[] = $this->parseLyrics((string) $line, $sourceNotations);
                 }
             }
         }
@@ -82,6 +84,40 @@ class Parser
     private function parseLyrics(string $line, array $sourceNotations = []): Lyrics
     {
         $blocks = [];
+        $possiblyEmptyBlocks = [];
+
+        $hasText = false;
+        $hasChords = false;
+
+        // First, check for ~ symbol.
+        $match = [];
+        if (preg_match('/^([^\[\]]+)~(.+)/', $line, $match) === 1) {
+            $matchChords = [];
+            $lineText = $match[1];
+            $result = preg_match_all('/\[([^\[\]]+)\]/', $match[2], $matchChords);
+            if (is_numeric($result) && $result > 0) {
+                $lineChords = $matchChords[1];
+                $blocks[] = new Block(
+                    chords: [],
+                    text: trim($lineText)
+                );
+                foreach ($lineChords as $chord) {
+                    $blocks[] = new Block(
+                        chords: Chord::fromSlice($chord, $sourceNotations),
+                        text: '',
+                        lineEnd: true
+                    );
+                }
+                return new Lyrics(
+                    blocks: $blocks,
+                    hasInlineChords: true,
+                    hasChords: true,
+                    hasText: true,
+                );
+            }
+
+        }
+
         $explodedLine = explode('[', $line);
         foreach($explodedLine as $num => $lineFragment) {
             if ($lineFragment !== '') {
@@ -89,19 +125,28 @@ class Parser
 
                 // If the fragment consists of only a chord without text.
                 if (isset($chordWithText[1]) && $chordWithText[1] == '') {
+                    $hasChords = true;
                     $blocks[] = new Block(
                         chords: Chord::fromSlice($chordWithText[0], $sourceNotations),
                         text: ''
                     );
                 }
-                // If first line begins with text and not a chord.
+                // If first block begins with text and not a chord.
                 elseif ($num == 0 && count($chordWithText) == 1) {
                     $blocks[] = new Block(
                         chords: [],
                         text: $chordWithText[0],
                     );
-                    // If there is a space after "]", threat it as separate blocks.
-                } elseif (substr($chordWithText[1], 0, 1) == " ") {
+                    if (preg_match('/\S/', $chordWithText[0])  === 1) {
+                        $hasText = true;
+                    } else {
+                        // Save the block as possibly empty, so we can remove it later.
+                        $possiblyEmptyBlocks[] = array_key_last($blocks);
+                    }
+
+                } elseif (isset($chordWithText[1]) && substr($chordWithText[1], 0, 1) == " ") {
+                    // If there is a space after "]", threat it as two separate blocks.
+                    $hasChords = true;
                     $blocks[] = new Block(
                         chords: Chord::fromSlice($chordWithText[0], $sourceNotations),
                         text: ''
@@ -110,15 +155,45 @@ class Parser
                         chords: [],
                         text: $chordWithText[1]
                     );
-                    // If there is no space after "]", threat it as chord with text.
+                    if (preg_match('/\S/', $chordWithText[1])  === 1) {
+                        $hasText = true;
+                    } else {
+                        // Save the block as possibly empty, so we can remove it later.
+                        $possiblyEmptyBlocks[] = array_key_last($blocks);
+                    }
+
                 } else {
+                    // If there is no space after "]", threat it as chord with text.
+                    $hasChords = true;
                     $blocks[] = new Block(
                         chords: Chord::fromSlice($chordWithText[0], $sourceNotations),
-                        text: $chordWithText[1]
+                        text: $chordWithText[1] ?? ''
                     );
+                    if (preg_match('/\S/', $chordWithText[1] ?? '')  === 1) {
+                        $hasText = true;
+                    } else {
+                        // Save the block as possibly empty, so we can remove it later.
+                        $possiblyEmptyBlocks[] = array_key_last($blocks);
+                    }
+
                 }
             }
         }
-        return new Lyrics($blocks);
+
+        // If there are only chords and no text, set text to empty string.
+        if ($hasChords && !$hasText) {
+            foreach ($possiblyEmptyBlocks as $blockKey) {
+                unset($blocks[$blockKey]);
+            }
+        } elseif (!$hasChords && !$hasText) {
+            $blocks = [];
+        }
+
+        return new Lyrics(
+            blocks: $blocks,
+            hasInlineChords: false,
+            hasChords: $hasChords,
+            hasText: $hasText,
+        );
     }
 }

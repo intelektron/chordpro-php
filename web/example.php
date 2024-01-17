@@ -1,23 +1,39 @@
 <?php
 
-$txt = "{t:Chordpro-PHP Song}
-{st:Nicolas Wurtz}
-{c:GPL3 2019 Nicolas Wurtz}
+$txt = "{t:A Nice Sample Song}
+{st:Grzegorz Pietrzak}
 {key:C}
 
 # Let's start it!
-[C]This is the [Dm]beautiful [Em]song
-I [Dm]wrote in [F/G]Chordpro for[C]mat [Dm/F]
-Let's sing it a[C/E]long
-[Bb] It's ea[Dm]sy to do [F]that [C]
+[C]Let's sing this [G]song [Am]together [Em]aloud
+[F]It's an [C]example [Dm]with some nice [G]sound
 
-{soc}
-[F] [G] [C]This is the refrain
-[F] [G] [C]We could sing it twice
+{soc: Chorus}
+[Bb]Whenever you [Am7]need to [Bb]format your [Am7]chords
+[Dm]The solution to your [F]problems [G]is very close
 {eoc}
 
-{c:Final}
-[Em/D]This is the [Bb]end.
+{comment: Now we recite some text}
+Sometimes you write text
+And there's no more room for chords
+
+{comment: Sometimes you play music without any words}
+[C] [G] [Am] [Em]
+
+You don't know where the chords are? ~ [F] [C]
+You don't have to know ~ [G] [G/F#]
+
+{sot: Outro}
+E-12---------------------|
+B----11-12---------------|
+G----------11s13-14------|
+D-------------------10-12|
+A------------------------|
+E------------------------|
+{eot}
+
+{comment: The end}
+Let's finish this song. [G] It's the end of the show.
 ";
 
 require __dir__ . '/../vendor/autoload.php';

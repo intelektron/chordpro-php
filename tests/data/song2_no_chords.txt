@@ -1,0 +1,17 @@
+Test
+TestSub
+Comment1
+Key: C
+VERSE
+Test1 Test2
+Test3 Test4
+
+Test5 Test6
+x
+Test7~
+
+CHORUS
+Test8 ~
+Test9 ~
+Test10
+Test11 Longer Line Tab

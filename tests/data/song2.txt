@@ -1,0 +1,25 @@
+Test
+TestSub
+Comment1
+Key: C
+VERSE
+Test1 Test2
+C7/E  D    
+Test3 Test4
+
+      E      
+Test5   Test6
+C7 D
+C G
+C G
+  CG
+x   
+Test7~
+
+CHORUS
+C7      D
+Test8 ~  
+        D
+Test9 ~  
+Test10                    D C
+Test11 Longer Line Tab    E FMaj7/E

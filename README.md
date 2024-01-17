@@ -38,32 +38,45 @@ See [web/example.php](web/example.php) for demo with CSS styling.
 
 require __DIR__ . '/vendor/autoload.php';
 
-$txt = "{t:Chordpro-PHP Song}
-{st:Nicolas Wurtz}
-{c:GPL3 2019 Nicolas Wurtz}
+$txt = "{t:A Nice Sample Song}
+{st:Grzegorz Pietrzak}
 {key:C}
 
 # Let's start it!
-[C]This is the [Dm]beautiful [Em]song
-I [Dm]wrote in [F/G]Chordpro for[C]mat [Dm/F]
-Let's sing it a[C/E]long
-[Bb] It's ea[Dm]sy to do [F]that [C]
+[C]Let's sing this [G]song [Am]together [Em]aloud
+[F]It's an [C]example [Dm]with some nice [G]sound
 
-{soc}
-[F] [G] [C]This is the refrain
-[F] [G] [C]We could sing it twice
+{soc: Chorus}
+[Bb]Whenever you [Am7]need to [Bb]format your [Am7]chords
+[Dm]The solution to your [F]problems [G]is very close
 {eoc}
 
-{c:Final}
-[Em/D]This is the [Bb]end.
-";
+{comment: Now we recite some text}
+Sometimes you write text
+And there's no more room for chords
+
+{comment: Sometimes you play music without any words}
+[C] [G] [Am] [Em]
+
+You don't know where the chords are? ~ [F] [C]
+You don't have to know ~ [G] [G/F#]
+
+{sot: Outro}
+E-12---------------------|
+B----11-12---------------|
+G----------11s13-14------|
+D-------------------10-12|
+A------------------------|
+E------------------------|
+{eot}
+
+{comment: The end}
+Let's finish this song. [G] It's the end of the show.";
 
 $parser = new ChordPro\Parser();
 
 // Choose one of these formatters according to your needs.
 $htmlFormatter = new ChordPro\Formatter\HtmlFormatter();
-$monospaceFormatter = new ChordPro\Formatter\MonospaceFormatter();
-$jsonFormatter = new ChordPro\Formatter\JSONFormatter();
 
 // Create song object after parsing $txt.
 $song = $parser->parse($txt);
@@ -72,20 +85,18 @@ $song = $parser->parse($txt);
 $transposer = new ChordPro\Transposer();
 
 // Define how many semitones you want to transpose by.
-$transposer->transpose($song, -5);
+// $transposer->transpose($song, -5);
 
 // If the song key is known, you can also transpose from key to key.
 // $transposer->transpose($song,'Abm');
 
 // The formatter has some options
 $options = [
-    'ignore_metadata' => 'title',
+    'ignore_metadata' => 'copyright',
 ];
 
 // Render !
 $html = $htmlFormatter->format($song, $options);
-$monospaced = $monospaceFormatter->format($song, $options);
-$json = $jsonFormatter->format($song, $options);
 ```
 
 ![Screenshot](web/example.png)
@@ -189,12 +200,12 @@ The ChordPro format allows to organize your songs into sections. The following s
 Will be converted to:
 
 ```html
-<div class="chordpro-verse-comment">Verse 1</div>
-<div class="chordpro-verse">
+<div class="chordpro-section-label chordpro-verse-label">Verse 1</div>
+<div class="chordpro-section chordpro-verse">
     ...
 </div>
 
-<div class="chordpro-foobar">
+<div class="chordpro-section chordpro-foobar">
     ...
 </div>
 ```
@@ -219,13 +230,18 @@ The library reads ChordPro metadata and renders it as HTML in the following way:
 ```chordpro
 {title: Let's Sing!}
 {c: Very loud}
+{key: C}
 ```
 
 Becomes:
 
 ``` html
-<div class="chordpro-title">Let's Sing!</div>
-<div class="chordpro-comment">Very loud</div>
+<div class="chordpro-metadata chordpro-title">Let's Sing!</div>
+<div class="chordpro-metadata chordpro-comment">Very loud</div>
+<div class="chordpro-metadata chordpro-key">
+    <span class="chordpro-metadata-name">Key: </span>
+    <span class="chordpro-metadata-value">C</span>
+</div>
 ```
 
 The names of metadata are not restricted in any way, however, there are some standard ones described by ChordPro format. The following shortcuts are supported:
@@ -235,3 +251,18 @@ The names of metadata are not restricted in any way, however, there are some sta
 - `{c}` → `{comment}`
 - `{ci}` → `{comment_italic}`
 - `{cb}` → `{comment_box}`
+
+## Extensions to ChordPro 6.x
+
+The library provides some non-standard features that can be useful for songbook creators.
+
+### Inline chords
+
+If you don't know how to assign the chord to syllables, or it's not important to you, you can use the inline chords assigned to the lyric line:
+
+```chordpro
+You don't know where the chords are? ~ [F] [C]
+You don't have to know ~ [G] [G/F#]
+```
+
+The chords appear above the line (in the HTML formatter) or to the right (in the monospace formatter).
