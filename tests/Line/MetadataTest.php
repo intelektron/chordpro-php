@@ -52,7 +52,8 @@ final class MetadataTest extends TestCase
 
     }
 
-    public function testSections(): void {
+    public function testSections(): void
+    {
         $metadata = new Metadata('start_of_Zażółć%_JAŹŃ', 'TEST');
         $this->assertEquals('start_of_Zażółć%_JAŹŃ', $metadata->getName());
         $this->assertEquals('zazolc-jazn', $metadata->getSectionType());
