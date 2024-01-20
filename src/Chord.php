@@ -30,13 +30,26 @@ class Chord
     private bool $isKnown = false;
 
     /**
+     * The static cache with notation root chords.
+     *
+     * @var array<array<string, string>>
+     */
+    private static array $notationRootChords = [];
+
+    /**
      * @param string $originalName The original name of the chord.
      * @param ChordNotationInterface[] $sourceNotations The notations to use, ordered by precedence.
      */
     public function __construct(private string $originalName, array $sourceNotations = [])
     {
         foreach ($sourceNotations as $sourceNotation) {
-            $originalName = $sourceNotation->convertChordRootFromNotation($originalName);
+            $notationRootChords = $this->getNotationRootChords($sourceNotation);
+            foreach ($notationRootChords as $notationRootChord => $rootChord) {
+                if (str_starts_with($originalName, $notationRootChord)) {
+                    $originalName = $rootChord . substr($originalName, strlen($notationRootChord));
+                    break;
+                }
+            }
         }
 
         foreach (self::ROOT_CHORDS as $rootChord) {
@@ -71,6 +84,27 @@ class Chord
             $result[] = new Chord($chord, $notations);
         }
         return $result;
+    }
+
+    /**
+     * Get the notation root chords for a notation.
+     *
+     * @return array<string>
+     */
+    private function getNotationRootChords(ChordNotationInterface $notation): array
+    {
+        if (!isset(self::$notationRootChords[$notation::class])) {
+            foreach (self::ROOT_CHORDS as $rootChord) {
+                $convertedChord = $notation->convertChordRootToNotation($rootChord);
+                if ($convertedChord !== $rootChord) {
+                    self::$notationRootChords[$notation::class][$convertedChord] = $rootChord;
+                }
+            }
+            // Sort by length of the notation root chord, descending.
+            $keys = array_map('strlen', array_keys(self::$notationRootChords[$notation::class]));
+            array_multisort($keys, SORT_DESC, self::$notationRootChords[$notation::class]);
+        }
+        return self::$notationRootChords[$notation::class];
     }
 
     public function isKnown(): bool
