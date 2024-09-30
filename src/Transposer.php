@@ -123,12 +123,13 @@ class Transposer
                             $this->simpleTranspose($chords, intval($value));
                         } elseif(!is_null($song->getKey())) {
                             $this->completeTranspose($chords, $song->getKey(), $value);
-                            $song->setKey($value);
                         }
                     }
                 }
             }
         }
+        
+        $song->setKey($value);
     }
 
     /**
